@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RechnungsHelferKostenlos – Kostenloser Rechnungsgenerator</title>
+
+<!-- SEO -->
+<meta name="description" content="Erstellen Sie professionelle Rechnungen komplett kostenlos: Live-Vorschau, PDF-Download, eigenes Logo und Hell-/Dunkelmodus – ohne Anmeldung, direkt im Browser.">
+<meta name="keywords" content="Rechnung erstellen, kostenloser Rechnungsgenerator, Rechnung online, Rechnung als PDF, Rechnungsvorlage kostenlos, Rechnung schreiben">
+<meta name="robots" content="index, follow">
+<meta name="author" content="RechnungsHelferKostenlos">
+<meta name="language" content="German">
+<link rel="canonical" href="https://dtim68506-prog.github.io/RechnungsHelferKostenlos/">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dtim68506-prog.github.io/RechnungsHelferKostenlos/">
+<meta property="og:title" content="RechnungsHelferKostenlos – Kostenloser Rechnungsgenerator">
+<meta property="og:description" content="Rechnungen kostenlos erstellen mit Live-Vorschau, eigenem Logo und direktem PDF-Download – ganz ohne Anmeldung.">
+<meta property="og:locale" content="de_DE">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RechnungsHelferKostenlos – Kostenloser Rechnungsgenerator">
+<meta name="twitter:description" content="Rechnungen kostenlos erstellen mit Live-Vorschau, eigenem Logo und direktem PDF-Download – ganz ohne Anmeldung.">
+
+<meta name="theme-color" content="#2E6B4F">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "RechnungsHelferKostenlos",
+  "url": "https://dtim68506-prog.github.io/RechnungsHelferKostenlos/",
+  "description": "Kostenloser Online-Rechnungsgenerator mit Live-Vorschau, eigenem Logo, Hell-/Dunkelmodus und direktem PDF-Download – ohne Anmeldung.",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any (Webbrowser)",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+  },
+  "inLanguage": "de"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Muss ich als Kleinunternehmer Umsatzsteuer auf der Rechnung ausweisen?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Nein. Kleinunternehmer nach § 19 UStG weisen keine Umsatzsteuer aus und sollten stattdessen einen kurzen Hinweis auf die Kleinunternehmerregelung auf der Rechnung ergänzen." }
+    },
+    {
+      "@type": "Question",
+      "name": "Reicht eine PDF-Rechnung 2026 noch aus?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Im B2C-Bereich und bei Kleinbetragsrechnungen ja. Im inländischen B2B-Bereich gilt PDF nur noch als sonstige Rechnung und ist während der gesetzlichen Übergangsfristen mit Zustimmung des Empfängers weiterhin zulässig." }
+    },
+    {
+      "@type": "Question",
+      "name": "Wie lange muss ich Rechnungen aufbewahren?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Seit der Gesetzesänderung durch das BEG IV grundsätzlich acht Jahre, gerechnet ab dem Ende des Kalenderjahres, in dem die Rechnung ausgestellt wurde." }
+    },
+    {
+      "@type": "Question",
+      "name": "Brauche ich zwingend eine fortlaufende Rechnungsnummer?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Ja. Die Rechnungsnummer muss einmalig und fortlaufend vergeben werden, damit die Rechnung eindeutig identifizierbar ist." }
+    }
+  ]
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style>
+  :root[data-theme="light"]{
+    --bg:#EFEAE0;
+    --panel:#F6F2E9;
+    --paper:#FFFFFF;
+    --ink:#1C2B3A;
+    --ink-soft:#5B6B78;
+    --rule:#DED6C3;
+    --rule-strong:#C7BEA6;
+    --accent:#2E6B4F;
+    --accent-soft:#E4EEE7;
+    --stamp-red:#B23A2C;
+    --stamp-red-soft:#F3E4E1;
+    --shadow: 0 18px 40px -22px rgba(28,43,58,0.35);
+    --input-bg:#FFFFFF;
+    --focus:#2E6B4F;
+  }
+  :root[data-theme="dark"]{
+    --bg:#0D1218;
+    --panel:#141B23;
+    --paper:#1A222C;
+    --ink:#EDE7DA;
+    --ink-soft:#93A0AC;
+    --rule:#2A323C;
+    --rule-strong:#3A4552;
+    --accent:#5CAE84;
+    --accent-soft:#1C2B23;
+    --stamp-red:#D0604E;
+    --stamp-red-soft:#2E1E1B;
+    --shadow: 0 18px 44px -20px rgba(0,0,0,0.6);
+    --input-bg:#1E2732;
+    --focus:#5CAE84;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    font-variant-numeric: tabular-nums;
+    transition: background .25s ease, color .25s ease;
+    min-height:100vh;
+  }
+
+  /* ---------- Topbar ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px 14px;
+    padding:16px 20px;
+    border-bottom:1px solid var(--rule);
+    background:var(--panel);
+    position:sticky; top:0; z-index:20;
+  }
+  .brand{
+    font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    font-weight:700;
+    font-size:1.2rem;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+  .brand span{ color:var(--accent); }
+  .free-badge{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    font-size:0.68rem;
+    font-weight:600;
+    color:var(--accent);
+    background:var(--accent-soft);
+    border-radius:20px;
+    padding:3px 10px;
+    margin-left:2px;
+    letter-spacing:0.01em;
+  }
+  .brand-group{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .topbar-actions{ display:flex; align-items:center; gap:14px; }
+
+  .theme-toggle{
+    width:44px; height:26px;
+    border-radius:14px;
+    border:1px solid var(--rule-strong);
+    background:var(--paper);
+    position:relative;
+    cursor:pointer;
+    padding:0;
+    transition: background .2s;
+  }
+  .theme-toggle .knob{
+    position:absolute; top:2px; left:2px;
+    width:20px; height:20px; border-radius:50%;
+    background:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    transition: left .2s ease;
+  }
+  :root[data-theme="dark"] .theme-toggle .knob{ left:20px; }
+  .theme-toggle svg{ width:12px; height:12px; stroke:var(--paper); fill:none; stroke-width:2; }
+
+  .btn-primary{
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:10px 18px;
+    border-radius:6px;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    font-weight:600;
+    font-size:0.9rem;
+    cursor:pointer;
+    transition: filter .15s ease, transform .1s ease;
+  }
+  .btn-primary:hover{ filter:brightness(1.08); }
+  .btn-primary:active{ transform:translateY(1px); }
+
+  /* ---------- Layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns: minmax(340px, 460px) 1fr;
+    gap:0;
+    min-height:calc(100vh - 66px);
+  }
+  @media (max-width: 900px){
+    .layout{ grid-template-columns: 1fr; min-height:auto; }
+    .form-panel{
+      max-height:none;
+      overflow-y:visible;
+      border-right:none;
+      border-bottom:1px solid var(--rule);
+      padding:20px 20px 32px;
+    }
+    .preview-panel{ padding:24px 16px 48px; }
+  }
+
+  .form-panel{
+    background:var(--panel);
+    border-right:1px solid var(--rule);
+    padding:28px 28px 60px;
+    overflow-y:auto;
+  }
+  .preview-panel{
+    background:var(--bg);
+    padding:40px 28px;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+  }
+
+  fieldset{
+    border:none;
+    margin:0 0 28px;
+    padding:0;
+  }
+  legend{
+    font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    font-weight:600;
+    font-size:1rem;
+    color:var(--ink);
+    margin-bottom:12px;
+    padding:0;
+  }
+  .field-row{ display:grid; gap:10px; margin-bottom:10px; }
+  .field-row.cols-2{ grid-template-columns:1fr 1fr; }
+  .field-row.cols-3{ grid-template-columns:1fr 1fr 1fr; }
+
+  label{
+    display:block;
+    font-size:0.78rem;
+    color:var(--ink-soft);
+    margin-bottom:5px;
+    font-weight:500;
+  }
+  input[type="text"], input[type="email"], input[type="number"], input[type="date"], select, textarea{
+    width:100%;
+    background:var(--input-bg);
+    border:1px solid var(--rule-strong);
+    border-radius:5px;
+    padding:9px 10px;
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    font-size:0.9rem;
+    color:var(--ink);
+    transition: border-color .15s ease;
+  }
+  textarea{ resize:vertical; min-height:64px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; }
+  input:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--focus);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  .items-block{
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .item-row{
+    display:grid;
+    grid-template-columns: 1fr 60px 90px 30px;
+    gap:8px;
+    align-items:center;
+  }
+  .item-row input{ padding:8px 9px; font-size:0.85rem; }
+  .remove-item{
+    background:none; border:none; cursor:pointer;
+    color:var(--ink-soft);
+    font-size:1.1rem;
+    line-height:1;
+    padding:4px;
+    border-radius:4px;
+  }
+  .remove-item:hover{ color:var(--stamp-red); background:var(--stamp-red-soft); }
+
+  .add-item{
+    margin-top:4px;
+    background:none;
+    border:1px dashed var(--rule-strong);
+    color:var(--ink-soft);
+    padding:9px;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:0.85rem;
+    font-weight:500;
+  }
+  .add-item:hover{ border-color:var(--accent); color:var(--accent); }
+
+  /* ---------- Invoice paper (preview) ---------- */
+  .invoice-paper{
+    width:100%;
+    max-width:640px;
+    background:var(--paper);
+    box-shadow:var(--shadow);
+    padding:44px 40px 40px;
+    position:relative;
+    border-radius:2px;
+  }
+  .pv-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    border-bottom:1px solid var(--rule);
+    padding-bottom:20px;
+    margin-bottom:24px;
+    position:relative;
+  }
+  .pv-title{
+    font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    font-weight:900;
+    font-size:2rem;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+    margin:0 0 4px;
+  }
+  .pv-sub{ font-size:0.78rem; color:var(--ink-soft); }
+  .pv-right{ display:flex; flex-direction:column; align-items:flex-end; }
+  .pv-logo{
+    display:none;
+    max-width:150px;
+    max-height:52px;
+    object-fit:contain;
+    margin-bottom:12px;
+  }
+  .pv-meta{ text-align:right; font-size:0.83rem; color:var(--ink); line-height:1.7; }
+  .pv-meta .label{ color:var(--ink-soft); margin-right:6px; }
+
+  .stamp{
+    position:absolute;
+    top:0; right:0;
+    border:2px solid var(--accent);
+    color:var(--accent);
+    font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    font-weight:700;
+    font-size:0.95rem;
+    padding:5px 14px;
+    border-radius:4px;
+    transform: rotate(6deg);
+    display:none;
+    letter-spacing:0.02em;
+  }
+  .stamp-overdue{ border-color:var(--stamp-red); color:var(--stamp-red); }
+  .pv-top.has-logo .stamp{ top:64px; }
+
+  .logo-upload{ display:flex; align-items:center; gap:12px; }
+  .logo-thumb{
+    width:56px; height:56px;
+    border:1px dashed var(--rule-strong);
+    border-radius:5px;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+    flex-shrink:0;
+    background:var(--input-bg);
+  }
+  .logo-thumb img{ max-width:100%; max-height:100%; object-fit:contain; }
+  .logo-thumb .empty{ font-size:0.68rem; color:var(--ink-soft); text-align:center; padding:4px; }
+  .logo-actions{ display:flex; flex-direction:column; gap:6px; }
+  .logo-btn{
+    background:none;
+    border:1px solid var(--rule-strong);
+    color:var(--ink);
+    padding:7px 12px;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:0.8rem;
+    font-weight:500;
+    text-align:left;
+  }
+  .logo-btn:hover{ border-color:var(--accent); color:var(--accent); }
+  .logo-btn.remove{ color:var(--stamp-red); border-color:transparent; padding:7px 0; display:none; }
+  .logo-btn.remove:hover{ text-decoration:underline; }
+
+  .pv-parties{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
+    margin-bottom:26px;
+  }
+  .pv-parties h4{
+    font-size:0.72rem;
+    text-transform:none;
+    letter-spacing:0.02em;
+    color:var(--ink-soft);
+    margin:0 0 6px;
+    font-weight:600;
+  }
+  .pv-parties p{ margin:0; font-size:0.88rem; line-height:1.55; color:var(--ink); white-space:pre-line; }
+
+  table.pv-items{
+    width:100%;
+    border-collapse:collapse;
+    margin-bottom:20px;
+  }
+  table.pv-items thead th{
+    text-align:left;
+    font-size:0.72rem;
+    color:var(--ink-soft);
+    font-weight:600;
+    border-bottom:1px solid var(--rule-strong);
+    padding:0 0 8px;
+  }
+  table.pv-items thead th.num{ text-align:right; }
+  table.pv-items tbody td{
+    padding:9px 0;
+    border-bottom:1px solid var(--rule);
+    font-size:0.87rem;
+    color:var(--ink);
+  }
+  table.pv-items tbody td.num{ text-align:right; }
+
+  .pv-totals{
+    margin-left:auto;
+    width:60%;
+    min-width:220px;
+  }
+  .pv-totals .row{
+    display:flex; justify-content:space-between;
+    font-size:0.86rem; padding:5px 0; color:var(--ink-soft);
+  }
+  .pv-totals .row.grand{
+    border-top:2px solid var(--accent);
+    margin-top:6px; padding-top:10px;
+    color:var(--ink);
+    font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    font-weight:700;
+    font-size:1.15rem;
+  }
+
+  .pv-notes{
+    margin-top:28px;
+    padding-top:16px;
+    border-top:1px solid var(--rule);
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    white-space:pre-line;
+    line-height:1.6;
+    font-style:italic;
+  }
+
+  @media (max-width: 480px){
+    .brand{ font-size:0.95rem; }
+    .btn-primary{ padding:10px 14px; font-size:0.85rem; }
+
+    input[type="text"], input[type="email"], input[type="number"], input[type="date"], select, textarea{
+      font-size:16px; /* prevents iOS Safari auto-zoom on focus */
+    }
+
+    .item-row-header{ display:none; }
+    .item-row{
+      grid-template-columns:1fr 1fr 30px;
+      grid-template-areas:
+        "desc desc desc"
+        "qty rate remove";
+      row-gap:6px;
+    }
+    .item-row input:nth-child(1){ grid-area:desc; }
+    .item-row input:nth-child(2){ grid-area:qty; }
+    .item-row input:nth-child(3){ grid-area:rate; }
+    .item-row .remove-item{ grid-area:remove; justify-self:end; align-self:start; }
+
+    .invoice-paper{ padding:28px 18px 28px; }
+    .pv-title{ font-size:1.5rem; }
+    .pv-logo{ max-width:110px; max-height:40px; }
+    .stamp{ font-size:0.8rem; padding:4px 10px; }
+    .pv-top.has-logo .stamp{ top:52px; }
+
+    .pv-parties{ grid-template-columns:1fr; gap:16px; }
+    .pv-totals{ width:100%; min-width:0; }
+
+    table.pv-items thead th{ font-size:0.66rem; padding-bottom:6px; }
+    table.pv-items tbody td{ font-size:0.8rem; padding:7px 0; }
+
+    .logo-thumb{ width:48px; height:48px; }
+  }
+
+  ::selection{ background:var(--accent-soft); }
+
+  /* ---------- Hero (H1 + intro, for SEO) ---------- */
+  .hero{
+    background:var(--panel);
+    border-bottom:1px solid var(--rule);
+    padding:22px 28px 26px;
+    text-align:center;
+  }
+  .hero h1{
+    font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    font-weight:700;
+    font-size:1.5rem;
+    margin:0 0 8px;
+    color:var(--ink);
+  }
+  .hero p{
+    margin:0 auto;
+    max-width:640px;
+    font-size:0.92rem;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+
+  /* ---------- Long-form content / Ratgeber ---------- */
+  .content-article{
+    max-width:760px;
+    margin:0 auto;
+    padding:56px 24px 72px;
+    color:var(--ink);
+    line-height:1.7;
+  }
+  .content-article h2{
+    font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    font-weight:700;
+    font-size:1.6rem;
+    margin:0 0 14px;
+    padding-top:8px;
+  }
+  .content-article > p.lead{
+    font-size:1rem;
+    color:var(--ink-soft);
+    margin-bottom:32px;
+  }
+  .content-article h3{
+    font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    font-weight:600;
+    font-size:1.15rem;
+    margin:34px 0 10px;
+    color:var(--ink);
+  }
+  .content-article p{ margin:0 0 14px; font-size:0.94rem; }
+  .content-article ul, .content-article ol{ margin:0 0 14px; padding-left:22px; font-size:0.94rem; }
+  .content-article li{ margin-bottom:6px; }
+
+  .pflicht-table{
+    width:100%;
+    border-collapse:collapse;
+    margin:12px 0 20px;
+    font-size:0.88rem;
+  }
+  .pflicht-table th, .pflicht-table td{
+    text-align:left;
+    padding:9px 10px;
+    border-bottom:1px solid var(--rule);
+  }
+  .pflicht-table th{ color:var(--ink-soft); font-weight:600; width:36px; }
+
+  .faq-item{
+    border-bottom:1px solid var(--rule);
+    padding:14px 0;
+  }
+  .faq-item summary{
+    font-family:Georgia,'Iowan Old Style','Palatino Linotype',serif;
+    font-weight:600;
+    font-size:0.98rem;
+    cursor:pointer;
+    color:var(--ink);
+    list-style:none;
+  }
+  .faq-item summary::-webkit-details-marker{ display:none; }
+  .faq-item summary::before{ content:'+ '; color:var(--accent); font-weight:700; }
+  .faq-item[open] summary::before{ content:'– '; }
+  .faq-item p{ margin:10px 0 0; color:var(--ink-soft); font-size:0.9rem; }
+
+  .disclaimer-box{
+    margin-top:36px;
+    padding:16px 18px;
+    border:1px solid var(--rule-strong);
+    border-left:3px solid var(--accent);
+    border-radius:4px;
+    font-size:0.82rem;
+    color:var(--ink-soft);
+    background:var(--panel);
+  }
+
+  @media (max-width:480px){
+    .hero{ padding:18px 18px 20px; }
+    .hero h1{ font-size:1.25rem; }
+    .content-article{ padding:40px 18px 56px; }
+    .content-article h2{ font-size:1.35rem; }
+  }
+
+  /* ---------- Footer ---------- */
+  .site-footer{
+    border-top:1px solid var(--rule);
+    background:var(--panel);
+    padding:20px 24px 90px;
+  }
+  .footer-inner{
+    max-width:760px;
+    margin:0 auto;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    font-size:0.82rem;
+    color:var(--ink-soft);
+  }
+  .footer-inner nav{ display:flex; gap:18px; }
+  .footer-inner a{ color:var(--ink-soft); text-decoration:none; }
+  .footer-inner a:hover{ color:var(--accent); text-decoration:underline; }
+
+  /* ---------- Cookie consent banner ---------- */
+  .cookie-banner{
+    display:none;
+    position:fixed;
+    left:0; right:0; bottom:0;
+    z-index:100;
+    background:var(--paper);
+    border-top:1px solid var(--rule-strong);
+    box-shadow:0 -12px 30px -14px rgba(0,0,0,0.25);
+    padding:16px 20px;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .cookie-banner p{
+    margin:0;
+    max-width:620px;
+    font-size:0.84rem;
+    color:var(--ink-soft);
+    line-height:1.5;
+  }
+  .cookie-banner p a{ color:var(--accent); }
+  .cookie-actions{ display:flex; gap:10px; flex-shrink:0; }
+  .cookie-btn{
+    padding:9px 16px;
+    border-radius:5px;
+    font-size:0.82rem;
+    font-weight:600;
+    cursor:pointer;
+    border:1px solid var(--rule-strong);
+    background:var(--paper);
+    color:var(--ink);
+  }
+  .cookie-btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .cookie-btn:hover{ filter:brightness(0.97); }
+  @media (max-width:480px){
+    .cookie-banner{ flex-direction:column; align-items:stretch; text-align:center; }
+    .cookie-actions{ justify-content:center; }
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand-group">
+    <div class="brand">Rechnungs<span>Helfer</span>Kostenlos</div>
+    <span class="free-badge">Kostenlos</span>
+  </div>
+  <div class="topbar-actions">
+    <button class="theme-toggle" id="themeToggle" aria-label="Hell-/Dunkelmodus wechseln">
+      <span class="knob">
+        <svg id="themeIcon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/></svg>
+      </span>
+    </button>
+    <button class="btn-primary" id="downloadBtn">PDF herunterladen</button>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Kostenloser Rechnungsgenerator für Deutschland</h1>
+  <p>Rechnung online erstellen, live in der Vorschau prüfen und direkt als PDF herunterladen – mit eigenem Logo, Hell-/Dunkelmodus und ohne Anmeldung. Weiter unten finden Sie außerdem einen Ratgeber zu den gesetzlichen Pflichtangaben nach § 14 UStG.</p>
+</section>
+
+<div class="layout">
+  <!-- ============ FORM ============ -->
+  <section class="form-panel">
+
+    <fieldset>
+      <legend>Logo</legend>
+      <div class="logo-upload">
+        <div class="logo-thumb" id="logoThumb"><span class="empty">Kein Logo</span></div>
+        <div class="logo-actions">
+          <button type="button" class="logo-btn" id="logoUploadBtn">Logo hochladen</button>
+          <button type="button" class="logo-btn remove" id="logoRemoveBtn">Logo entfernen</button>
+        </div>
+        <input type="file" id="logoInput" accept="image/*" style="display:none;">
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Von</legend>
+      <div class="field-row">
+        <div><label>Firmenname</label><input type="text" data-path="from.name" placeholder="Deine Firma GmbH"></div>
+      </div>
+      <div class="field-row cols-2">
+        <div><label>E-Mail</label><input type="email" data-path="from.email" placeholder="kontakt@firma.de"></div>
+        <div><label>Telefon</label><input type="text" data-path="from.phone" placeholder="+49 30 1234567"></div>
+      </div>
+      <div class="field-row">
+        <div><label>Adresse</label><textarea data-path="from.address" placeholder="Musterstraße 1&#10;10115 Berlin"></textarea></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Rechnungsempfänger</legend>
+      <div class="field-row">
+        <div><label>Name / Firma</label><input type="text" data-path="to.name" placeholder="Max Mustermann"></div>
+      </div>
+      <div class="field-row">
+        <div><label>E-Mail</label><input type="email" data-path="to.email" placeholder="max@beispiel.de"></div>
+      </div>
+      <div class="field-row">
+        <div><label>Adresse</label><textarea data-path="to.address" placeholder="Beispielweg 5&#10;80331 München"></textarea></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Details</legend>
+      <div class="field-row cols-2">
+        <div><label>Rechnungsnummer</label><input type="text" id="fld-number" data-path="number"></div>
+        <div><label>Status</label>
+          <select id="fld-status" data-path="status">
+            <option value="draft">Entwurf</option>
+            <option value="sent">Versendet</option>
+            <option value="paid">Bezahlt</option>
+            <option value="overdue">Überfällig</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row cols-2">
+        <div><label>Rechnungsdatum</label><input type="date" id="fld-issue" data-path="issueDate"></div>
+        <div><label>Fällig am</label><input type="date" id="fld-due" data-path="dueDate"></div>
+      </div>
+      <div class="field-row">
+        <div><label>Währung</label>
+          <select id="fld-currency" data-path="currency">
+            <option value="EUR">EUR – Euro</option>
+            <option value="USD">USD – US-Dollar</option>
+            <option value="GBP">GBP – Britisches Pfund</option>
+            <option value="UAH">UAH – Ukrainische Hrywnja</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Positionen</legend>
+      <div class="item-row item-row-header" style="margin-bottom:2px;">
+        <label style="margin:0;">Beschreibung</label>
+        <label style="margin:0;">Menge</label>
+        <label style="margin:0;">Preis</label>
+        <span></span>
+      </div>
+      <div class="items-block" id="itemsBody"></div>
+      <button type="button" class="add-item" id="addItemBtn">+ Position hinzufügen</button>
+    </fieldset>
+
+    <fieldset>
+      <legend>Steuer &amp; Rabatt</legend>
+      <div class="field-row cols-2">
+        <div><label>MwSt. (%)</label><input type="number" id="fld-tax" data-path="taxRate" step="0.1" min="0"></div>
+        <div><label>Rabatt (%)</label><input type="number" id="fld-discount" data-path="discount" step="0.1" min="0"></div>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Notizen &amp; Zahlungsbedingungen</legend>
+      <textarea id="fld-notes" data-path="notes" rows="4"></textarea>
+    </fieldset>
+
+  </section>
+
+  <!-- ============ PREVIEW ============ -->
+  <section class="preview-panel">
+    <div class="invoice-paper" id="invoicePaper">
+      <div class="pv-top" id="pvTop">
+        <div>
+          <p class="pv-title">Rechnung</p>
+          <p class="pv-sub" id="pv-brand">RechnungsHelferKostenlos</p>
+        </div>
+        <div class="pv-right" id="pvRight">
+          <img class="pv-logo" id="pv-logo" alt="Firmenlogo">
+          <div class="pv-meta">
+            <div><span class="label">Nr.</span><span id="pv-number">—</span></div>
+            <div><span class="label">Datum</span><span id="pv-issue">—</span></div>
+            <div><span class="label">Fällig</span><span id="pv-due">—</span></div>
+          </div>
+        </div>
+        <div class="stamp" id="pv-stamp"></div>
+      </div>
+
+      <div class="pv-parties">
+        <div>
+          <h4>Von</h4>
+          <p id="pv-from">—</p>
+        </div>
+        <div>
+          <h4>Rechnungsempfänger</h4>
+          <p id="pv-to">—</p>
+        </div>
+      </div>
+
+      <table class="pv-items">
+        <thead>
+          <tr><th>Beschreibung</th><th class="num">Menge</th><th class="num">Preis</th><th class="num">Betrag</th></tr>
+        </thead>
+        <tbody id="pv-items"></tbody>
+      </table>
+
+      <div class="pv-totals">
+        <div class="row"><span>Zwischensumme</span><span id="pv-subtotal">—</span></div>
+        <div class="row" id="pv-discount-row" style="display:none;"><span id="pv-discount-label">Rabatt</span><span id="pv-discount">—</span></div>
+        <div class="row"><span id="pv-tax-label">MwSt.</span><span id="pv-tax">—</span></div>
+        <div class="row grand"><span>Gesamtbetrag</span><span id="pv-total">—</span></div>
+      </div>
+
+      <div class="pv-notes" id="pv-notes"></div>
+    </div>
+  </section>
+</div>
+
+<article class="content-article">
+  <h2>Rechnung schreiben in Deutschland: Ratgeber 2026</h2>
+  <p class="lead">Ob als Freiberufler, Kleinunternehmer oder GmbH – eine Rechnung muss in Deutschland bestimmte gesetzliche Angaben enthalten, damit sie steuerlich anerkannt wird und der Empfänger den Vorsteuerabzug geltend machen kann. Dieser Ratgeber fasst die wichtigsten Regeln zusammen.</p>
+
+  <h3>Die 9 Pflichtangaben nach § 14 UStG</h3>
+  <p>Jede ordnungsgemäße Rechnung muss laut Umsatzsteuergesetz folgende neun Angaben enthalten:</p>
+  <table class="pflicht-table">
+    <tbody>
+      <tr><th>1</th><td>Vollständiger Name und Anschrift des leistenden Unternehmens</td></tr>
+      <tr><th>2</th><td>Vollständiger Name und Anschrift des Rechnungsempfängers</td></tr>
+      <tr><th>3</th><td>Steuernummer oder Umsatzsteuer-Identifikationsnummer (USt-IdNr.) des Leistenden</td></tr>
+      <tr><th>4</th><td>Ausstellungsdatum der Rechnung</td></tr>
+      <tr><th>5</th><td>Fortlaufende, einmalig vergebene Rechnungsnummer</td></tr>
+      <tr><th>6</th><td>Menge und Art der gelieferten Gegenstände bzw. Umfang und Art der Leistung</td></tr>
+      <tr><th>7</th><td>Zeitpunkt der Lieferung oder Leistung (Leistungsdatum)</td></tr>
+      <tr><th>8</th><td>Nach Steuersätzen aufgeschlüsseltes Entgelt sowie vereinbarte Preisminderungen</td></tr>
+      <tr><th>9</th><td>Anzuwendender Steuersatz und Steuerbetrag – oder ein Hinweis auf die Steuerbefreiung</td></tr>
+    </tbody>
+  </table>
+  <p>Fehlt eine dieser Angaben, gilt die Rechnung als formell fehlerhaft. Das kann dazu führen, dass das Finanzamt dem Empfänger den Vorsteuerabzug verweigert.</p>
+
+  <h3>Kleinbetragsrechnungen bis 250 €</h3>
+  <p>Für Rechnungen bis 250 € brutto gelten nach § 33 UStDV vereinfachte Anforderungen: Eine separate Angabe des Leistungsempfängers und die Aufschlüsselung von Netto- und Steuerbetrag können entfallen, es genügt der Bruttobetrag inklusive Steuersatz. Diese Erleichterung gilt jedoch nicht bei innergemeinschaftlichen Lieferungen oder im Reverse-Charge-Verfahren.</p>
+
+  <h3>Rechnungen als Kleinunternehmer (§ 19 UStG)</h3>
+  <p>Wer die Kleinunternehmerregelung nutzt, weist auf der Rechnung keine Umsatzsteuer aus. Seit 2025 gilt die Regelung, solange der Vorjahresumsatz 25.000 € und der laufende Jahresumsatz voraussichtlich 100.000 € nicht übersteigt. Auf der Rechnung sollte ein Hinweis stehen, etwa: „Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.“</p>
+
+  <h3>E-Rechnungspflicht seit 2025</h3>
+  <p>Seit dem 1. Januar 2025 gilt im inländischen B2B-Bereich grundsätzlich die E-Rechnungspflicht. Alle inländischen Unternehmen müssen seither in der Lage sein, elektronische Rechnungen in strukturierten Formaten wie XRechnung oder ZUGFeRD zu empfangen. Für die Pflicht zur Ausstellung gelten großzügige Übergangsfristen – je nach Unternehmensgröße bis Ende 2026 bzw. Ende 2027. Wichtig: Eine einfache PDF-Datei gilt seit 2025 nicht mehr als E-Rechnung, sondern nur als „sonstige Rechnung“, die während der Übergangsfristen weiterhin mit Zustimmung des Empfängers verwendet werden darf. Für Kleinbetragsrechnungen bis 250 € sowie im B2C-Bereich (Rechnungen an Privatpersonen) gilt die E-Rechnungspflicht nicht.</p>
+
+  <h3>Zahlungsfristen und Fälligkeit</h3>
+  <p>Ohne ausdrückliche Vereinbarung ist eine Rechnung sofort nach Zugang fällig. In der Praxis üblich sind Zahlungsziele von 14 oder 30 Tagen, die auf der Rechnung klar angegeben werden sollten. Bei Geschäften zwischen Unternehmen tritt der Zahlungsverzug automatisch 30 Tage nach Fälligkeit und Zugang der Rechnung ein, ohne dass es einer gesonderten Mahnung bedarf.</p>
+
+  <h3>Wie lange müssen Rechnungen aufbewahrt werden?</h3>
+  <p>Durch das Vierte Bürokratieentlastungsgesetz (BEG IV) wurde die Aufbewahrungsfrist für Buchungsbelege – also auch für Ein- und Ausgangsrechnungen – von zehn auf acht Jahre verkürzt. Die verkürzte Frist gilt für alle Rechnungen, deren zehnjährige Frist am 31. Dezember 2024 noch nicht abgelaufen war. Für Jahresabschlüsse, Bilanzen und Inventare gelten weiterhin zehn Jahre.</p>
+
+  <h3>Rechnung korrigieren – was tun bei Fehlern?</h3>
+  <p>Eine bereits verschickte Rechnung darf nicht einfach nachträglich verändert werden. Bei Fehlern wird entweder eine Rechnungskorrektur mit Bezug auf die ursprüngliche Rechnungsnummer ausgestellt, oder die fehlerhafte Rechnung wird storniert und durch eine neue, korrekte Rechnung mit neuer Rechnungsnummer ersetzt.</p>
+
+  <h3 id="faq">Häufige Fragen</h3>
+  <details class="faq-item">
+    <summary>Muss ich als Kleinunternehmer Umsatzsteuer auf der Rechnung ausweisen?</summary>
+    <p>Nein. Kleinunternehmer nach § 19 UStG weisen keine Umsatzsteuer aus und sollten stattdessen einen kurzen Hinweis auf die Kleinunternehmerregelung auf der Rechnung ergänzen.</p>
+  </details>
+  <details class="faq-item">
+    <summary>Reicht eine PDF-Rechnung 2026 noch aus?</summary>
+    <p>Im B2C-Bereich und bei Kleinbetragsrechnungen ja. Im inländischen B2B-Bereich gilt PDF nur noch als „sonstige Rechnung“ und ist während der gesetzlichen Übergangsfristen mit Zustimmung des Empfängers weiterhin zulässig.</p>
+  </details>
+  <details class="faq-item">
+    <summary>Wie lange muss ich Rechnungen aufbewahren?</summary>
+    <p>Seit der Gesetzesänderung durch das BEG IV grundsätzlich acht Jahre, gerechnet ab dem Ende des Kalenderjahres, in dem die Rechnung ausgestellt wurde.</p>
+  </details>
+  <details class="faq-item">
+    <summary>Brauche ich zwingend eine fortlaufende Rechnungsnummer?</summary>
+    <p>Ja. Die Rechnungsnummer muss einmalig und fortlaufend vergeben werden, damit die Rechnung eindeutig identifizierbar ist – eine der neun Pflichtangaben nach § 14 UStG.</p>
+  </details>
+
+  <div class="disclaimer-box">
+    Dieser Ratgeber dient ausschließlich der allgemeinen Information und ersetzt keine individuelle steuerliche oder rechtliche Beratung. Für verbindliche Auskünfte zu Ihrer konkreten Situation wenden Sie sich bitte an einen Steuerberater oder das zuständige Finanzamt.
+  </div>
+</article>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>© 2026 RechnungsHelferKostenlos</span>
+    <nav>
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutzerklärung</a>
+    </nav>
+  </div>
+</footer>
+
+<div class="cookie-banner" id="cookieBanner" role="dialog" aria-live="polite" aria-label="Cookie-Einstellungen">
+  <p>Diese Website verwendet Cookies und ähnliche Technologien, unter anderem für Analyse- und Werbezwecke. Details finden Sie in unserer <a href="datenschutz.html">Datenschutzerklärung</a>.</p>
+  <div class="cookie-actions">
+    <button type="button" class="cookie-btn" id="cookieDecline">Nur notwendige</button>
+    <button type="button" class="cookie-btn primary" id="cookieAccept">Akzeptieren</button>
+  </div>
+</div>
+
+<script>
+/* ---------------- State ---------------- */
+const state = {
+  from: { name:'', email:'', phone:'', address:'' },
+  to: { name:'', email:'', address:'' },
+  number: 'RE-2026-001',
+  issueDate: '',
+  dueDate: '',
+  currency: 'EUR',
+  status: 'draft',
+  taxRate: 19,
+  discount: 0,
+  notes: 'Zahlbar innerhalb von 14 Tagen ab Rechnungsdatum.\nVielen Dank für Ihr Vertrauen!',
+  items: [],
+  logo: null
+};
+let itemIdCounter = 0;
+
+const statusLabels = { draft:'Entwurf', sent:'Versendet', paid:'Bezahlt', overdue:'Überfällig' };
+const localeMap = { EUR:'de-DE', USD:'en-US', GBP:'en-GB', UAH:'uk-UA' };
+
+function fmtMoney(n){
+  return new Intl.NumberFormat(localeMap[state.currency] || 'de-DE', { style:'currency', currency: state.currency }).format(n || 0);
+}
+function fmtDate(iso){
+  if(!iso) return '—';
+  const [y,m,d] = iso.split('-');
+  return `${d}.${m}.${y}`;
+}
+function escapeHtml(str){
+  return (str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+/* ---------------- Field binding ---------------- */
+function getNested(obj, path){
+  return path.split('.').reduce((o,k)=>o[k], obj);
+}
+function setNested(obj, path, value){
+  const parts = path.split('.');
+  let cur = obj;
+  for(let i=0;i<parts.length-1;i++) cur = cur[parts[i]];
+  cur[parts[parts.length-1]] = value;
+}
+document.querySelectorAll('[data-path]').forEach(el=>{
+  const isNumber = el.type === 'number';
+  const handler = () => {
+    setNested(state, el.dataset.path, isNumber ? (parseFloat(el.value)||0) : el.value);
+    renderPreview();
+  };
+  el.addEventListener('input', handler);
+  el.addEventListener('change', handler);
+});
+
+/* ---------------- Items ---------------- */
+const itemsBody = document.getElementById('itemsBody');
+
+function addItem(desc, qty, rate){
+  const id = itemIdCounter++;
+  const item = { id, desc: desc||'', qty: qty ?? 1, rate: rate ?? 0 };
+  state.items.push(item);
+
+  const row = document.createElement('div');
+  row.className = 'item-row';
+  row.dataset.id = id;
+  row.innerHTML = `
+    <input type="text" data-field="desc" placeholder="Leistung / Produkt" value="${escapeHtml(item.desc)}">
+    <input type="number" data-field="qty" min="0" step="1" placeholder="Menge" value="${item.qty}">
+    <input type="number" data-field="rate" min="0" step="0.01" placeholder="Preis" value="${item.rate}">
+    <button type="button" class="remove-item" title="Entfernen">×</button>
+  `;
+  row.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input', ()=>{
+      const it = state.items.find(i=>i.id===id);
+      if(!it) return;
+      const field = inp.dataset.field;
+      it[field] = field === 'desc' ? inp.value : (parseFloat(inp.value)||0);
+      renderPreview();
+    });
+  });
+  row.querySelector('.remove-item').addEventListener('click', ()=>{
+    state.items = state.items.filter(i=>i.id!==id);
+    row.remove();
+    renderPreview();
+  });
+  itemsBody.appendChild(row);
+}
+
+document.getElementById('addItemBtn').addEventListener('click', ()=> { addItem('', 1, 0); renderPreview(); });
+
+/* ---------------- Logo upload ---------------- */
+const logoInput = document.getElementById('logoInput');
+const logoThumb = document.getElementById('logoThumb');
+const logoRemoveBtn = document.getElementById('logoRemoveBtn');
+
+document.getElementById('logoUploadBtn').addEventListener('click', ()=> logoInput.click());
+
+logoInput.addEventListener('change', ()=>{
+  const file = logoInput.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    state.logo = reader.result;
+    updateLogoThumb();
+    renderPreview();
+  };
+  reader.readAsDataURL(file);
+});
+
+logoRemoveBtn.addEventListener('click', ()=>{
+  state.logo = null;
+  logoInput.value = '';
+  updateLogoThumb();
+  renderPreview();
+});
+
+function updateLogoThumb(){
+  if(state.logo){
+    logoThumb.innerHTML = `<img src="${state.logo}" alt="Logo">`;
+    logoRemoveBtn.style.display = 'block';
+  } else {
+    logoThumb.innerHTML = '<span class="empty">Kein Logo</span>';
+    logoRemoveBtn.style.display = 'none';
+  }
+}
+
+/* ---------------- Totals ---------------- */
+function calcTotals(){
+  const subtotal = state.items.reduce((s,i)=> s + (i.qty * i.rate), 0);
+  const discountAmt = subtotal * (state.discount/100);
+  const afterDiscount = subtotal - discountAmt;
+  const taxAmt = afterDiscount * (state.taxRate/100);
+  const total = afterDiscount + taxAmt;
+  return { subtotal, discountAmt, afterDiscount, taxAmt, total };
+}
+
+/* ---------------- Render preview ---------------- */
+function renderPreview(){
+  document.getElementById('pv-number').textContent = state.number || '—';
+  document.getElementById('pv-issue').textContent = fmtDate(state.issueDate);
+  document.getElementById('pv-due').textContent = fmtDate(state.dueDate);
+
+  const fromLines = [state.from.name, state.from.address, state.from.email, state.from.phone].filter(Boolean).join('\n');
+  const toLines = [state.to.name, state.to.address, state.to.email].filter(Boolean).join('\n');
+  document.getElementById('pv-from').textContent = fromLines || 'Noch keine Angaben';
+  document.getElementById('pv-to').textContent = toLines || 'Noch keine Angaben';
+
+  const tbody = document.getElementById('pv-items');
+  tbody.innerHTML = state.items.map(i => `
+    <tr>
+      <td>${escapeHtml(i.desc) || '—'}</td>
+      <td class="num">${i.qty}</td>
+      <td class="num">${fmtMoney(i.rate)}</td>
+      <td class="num">${fmtMoney(i.qty*i.rate)}</td>
+    </tr>
+  `).join('') || `<tr><td colspan="4" style="color:var(--ink-soft);">Noch keine Positionen</td></tr>`;
+
+  const t = calcTotals();
+  document.getElementById('pv-subtotal').textContent = fmtMoney(t.subtotal);
+  document.getElementById('pv-tax-label').textContent = `MwSt. (${state.taxRate}%)`;
+  document.getElementById('pv-tax').textContent = fmtMoney(t.taxAmt);
+  document.getElementById('pv-total').textContent = fmtMoney(t.total);
+
+  const discRow = document.getElementById('pv-discount-row');
+  if(state.discount > 0){
+    discRow.style.display = 'flex';
+    document.getElementById('pv-discount-label').textContent = `Rabatt (${state.discount}%)`;
+    document.getElementById('pv-discount').textContent = '−' + fmtMoney(t.discountAmt);
+  } else {
+    discRow.style.display = 'none';
+  }
+
+  document.getElementById('pv-notes').textContent = state.notes || '';
+
+  const pvLogo = document.getElementById('pv-logo');
+  const pvTop = document.getElementById('pvTop');
+  if(state.logo){
+    pvLogo.src = state.logo;
+    pvLogo.style.display = 'block';
+    pvTop.classList.add('has-logo');
+  } else {
+    pvLogo.removeAttribute('src');
+    pvLogo.style.display = 'none';
+    pvTop.classList.remove('has-logo');
+  }
+
+  const stamp = document.getElementById('pv-stamp');
+  if(state.status === 'draft'){
+    stamp.style.display = 'none';
+  } else {
+    stamp.style.display = 'block';
+    stamp.textContent = statusLabels[state.status];
+    stamp.className = 'stamp' + (state.status === 'overdue' ? ' stamp-overdue' : '');
+  }
+}
+
+/* ---------------- Theme toggle ---------------- */
+const root = document.documentElement;
+const themeIcon = document.getElementById('themeIcon');
+function setThemeIcon(theme){
+  themeIcon.innerHTML = theme === 'dark'
+    ? '<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>'
+    : '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" stroke-linecap="round"/>';
+}
+document.getElementById('themeToggle').addEventListener('click', ()=>{
+  const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  root.setAttribute('data-theme', next);
+  setThemeIcon(next);
+});
+setThemeIcon('light');
+
+/* ---------------- Init defaults ---------------- */
+function initDefaults(){
+  const today = new Date();
+  const due = new Date(today.getTime() + 14*24*3600*1000);
+  const toISO = d => d.toISOString().slice(0,10);
+
+  state.from = { name:'Deine Firma GmbH', email:'kontakt@deinefirma.de', phone:'+49 30 1234567', address:'Musterstraße 1\n10115 Berlin' };
+  state.to = { name:'Max Mustermann', email:'max@beispiel.de', address:'Beispielweg 5\n80331 München' };
+  state.issueDate = toISO(today);
+  state.dueDate = toISO(due);
+
+  document.querySelectorAll('[data-path]').forEach(el=>{
+    const val = getNested(state, el.dataset.path);
+    el.value = val;
+  });
+
+  addItem('Konzeption & Beratung', 4, 95);
+  addItem('Umsetzung Webseite', 1, 1200);
+
+  renderPreview();
+}
+initDefaults();
+
+/* ---------------- PDF export ---------------- */
+function loadImageMeta(dataUrl){
+  return new Promise((resolve, reject)=>{
+    const img = new Image();
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = reject;
+    img.src = dataUrl;
+  });
+}
+
+document.getElementById('downloadBtn').addEventListener('click', async ()=>{
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'mm', format:'a4' });
+
+  const ink = [28,43,58];
+  const soft = [91,107,120];
+  const accent = state.status === 'overdue' ? [178,58,44] : [46,107,79];
+  const rule = [222,214,195];
+  const t = calcTotals();
+
+  doc.setFont('times','bold');
+  doc.setFontSize(26);
+  doc.setTextColor(...ink);
+  doc.text('RECHNUNG', 15, 25);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...soft);
+  doc.text('RechnungsHelferKostenlos', 15, 31);
+
+  // Logo (top right) — only drawn if the user uploaded one
+  let metaTopY = 18;
+  if(state.logo){
+    const maxW = 40, maxH = 18;
+    const meta = await loadImageMeta(state.logo);
+    const ratio = Math.min(maxW / meta.width, maxH / meta.height);
+    const w = meta.width * ratio;
+    const h = meta.height * ratio;
+    const format = state.logo.startsWith('data:image/png') ? 'PNG' : 'JPEG';
+    doc.addImage(state.logo, format, 195 - w, 10, w, h);
+    metaTopY = 10 + h + 8;
+  }
+
+  doc.setFontSize(10);
+  doc.setTextColor(...ink);
+  doc.text(`Rechnungsnr.: ${state.number || '—'}`, 195, metaTopY, { align:'right' });
+  doc.text(`Datum: ${fmtDate(state.issueDate)}`, 195, metaTopY + 5, { align:'right' });
+  doc.text(`Fällig am: ${fmtDate(state.dueDate)}`, 195, metaTopY + 10, { align:'right' });
+
+  let headerBottom = metaTopY + 10;
+
+  if(state.status !== 'draft'){
+    doc.setDrawColor(...accent);
+    doc.setTextColor(...accent);
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(13);
+    doc.text(statusLabels[state.status].toUpperCase(), 195, metaTopY + 18, { align:'right' });
+    headerBottom = metaTopY + 18;
+  }
+
+  const dividerY = Math.max(40, headerBottom + 4);
+  doc.setDrawColor(...rule);
+  doc.line(15, dividerY, 195, dividerY);
+
+  const partiesLabelY = dividerY + 8;
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(8.5);
+  doc.setTextColor(...soft);
+  doc.text('VON', 15, partiesLabelY);
+  doc.text('RECHNUNGSEMPFÄNGER', 110, partiesLabelY);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(10);
+  doc.setTextColor(...ink);
+  const fromLines = [state.from.name, ...(state.from.address||'').split('\n'), state.from.email, state.from.phone].filter(Boolean);
+  const toLines = [state.to.name, ...(state.to.address||'').split('\n'), state.to.email].filter(Boolean);
+  const partiesTextY = partiesLabelY + 7;
+  fromLines.forEach((line,i)=> doc.text(line, 15, partiesTextY + i*5));
+  toLines.forEach((line,i)=> doc.text(line, 110, partiesTextY + i*5));
+
+  const tableStartY = partiesTextY + Math.max(fromLines.length, toLines.length)*5 + 10;
+
+  doc.autoTable({
+    startY: tableStartY,
+    head: [['Beschreibung','Menge','Preis','Betrag']],
+    body: state.items.map(i => [i.desc || '—', String(i.qty), fmtMoney(i.rate), fmtMoney(i.qty*i.rate)]),
+    styles: { font:'helvetica', fontSize:9.5, textColor: ink, lineColor: rule, lineWidth:0.1, cellPadding:3 },
+    headStyles: { fillColor: ink, textColor:255, fontStyle:'bold', fontSize:9 },
+    columnStyles: {
+      1:{ halign:'right', cellWidth:22 },
+      2:{ halign:'right', cellWidth:32 },
+      3:{ halign:'right', cellWidth:32 }
+    },
+    margin:{ left:15, right:15 }
+  });
+
+  let y = doc.lastAutoTable.finalY + 10;
+
+  function totalLine(label, value, bold){
+    doc.setFont('helvetica', bold ? 'bold' : 'normal');
+    doc.setFontSize(bold ? 12 : 9.5);
+    doc.setTextColor(...ink);
+    doc.text(label, 150, y);
+    doc.text(value, 195, y, { align:'right' });
+    y += bold ? 8 : 6;
+  }
+
+  totalLine('Zwischensumme', fmtMoney(t.subtotal));
+  if(state.discount > 0) totalLine(`Rabatt (${state.discount}%)`, '−' + fmtMoney(t.discountAmt));
+  totalLine(`MwSt. (${state.taxRate}%)`, fmtMoney(t.taxAmt));
+  doc.setDrawColor(...accent);
+  doc.line(150, y - 2, 195, y - 2);
+  totalLine('Gesamtbetrag', fmtMoney(t.total), true);
+
+  if(state.notes){
+    y += 10;
+    doc.setDrawColor(...rule);
+    doc.line(15, y, 195, y);
+    y += 8;
+    doc.setFont('helvetica','italic');
+    doc.setFontSize(9);
+    doc.setTextColor(...soft);
+    const noteLines = doc.splitTextToSize(state.notes, 180);
+    noteLines.forEach((line,i)=> doc.text(line, 15, y + i*4.5));
+  }
+
+  doc.save(`Rechnung_${state.number || 'RechnungsHelferKostenlos'}.pdf`);
+});
+
+/* ---------------- Cookie consent ---------------- */
+(function(){
+  const KEY = 'rhk_cookie_consent';
+  const banner = document.getElementById('cookieBanner');
+  const saved = localStorage.getItem(KEY);
+  if(!saved){ banner.style.display = 'flex'; }
+
+  document.getElementById('cookieAccept').addEventListener('click', ()=>{
+    localStorage.setItem(KEY, 'accepted');
+    banner.style.display = 'none';
+    // Sobald Google AdSense / Consent Mode eingebunden ist: hier Personalisierung aktivieren.
+  });
+  document.getElementById('cookieDecline').addEventListener('click', ()=>{
+    localStorage.setItem(KEY, 'declined');
+    banner.style.display = 'none';
+  });
+})();
+</script>
+</body>
+</html>
